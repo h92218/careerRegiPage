@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="kr.spring.card.dao.CardMapper">
+
+	
+	<select id="selectByYear">
+	
+	
+	
+	</select>
+
+
+	<delete id="deleteEdu" parameterType="hashmap">
+	delete 
+	from user_info_edu
+	where edu_idx in
+		(select edu_idx 
+		from user_info_edu
+		where edu_idx not in
+		<foreach collection="eduList" item="eduList" open="(" separator="," close=")">
+		#{eduList.edu_idx}
+		</foreach>
+		 and user_idx=#{user_idx})
+	</delete>
+	
+	
+	
+	<delete id="deleteQualifi" parameterType="hashmap">
+	delete 
+	from user_info_qualifi 
+	where qualifi_idx in
+		(select qualifi_idx 
+		from user_info_qualifi 
+		where qualifi_idx not in
+		<foreach collection="qualifiList" item="qualifiList" open="(" separator="," close=")">
+		#{qualifiList.qualifi_idx}
+		</foreach>
+		 and user_idx=#{user_idx})
+	
+	</delete>
+
+
+
+
+	<update id="updateQualifi" parameterType="QualifiVO">
+		update user_info_qualifi
+		set 
+			qualifi_name = #{qualifi_name}
+			,qualifi_getdate = #{qualifi_getdate}
+		where qualifi_idx = #{qualifi_idx}
+	
+	</update>
+
+	<update id="updateEdu" parameterType="EduVO">
+		update user_info_edu
+		set
+			edu_school = #{edu_school}
+			,edu_status = #{edu_status}
+			,edu_year = #{edu_year}
+			,edu_month = #{edu_month}
+		where edu_idx = #{edu_idx}
+	</update>
+	
+	<update id="updateUser" parameterType="cardVO">
+	update user_info
+	set 
+		user_name=#{user_name}
+		,user_sex=#{user_sex}
+		,user_comp=#{user_comp}
+		,user_comp_enter=#{user_comp_enter}
+		,user_dept=#{user_dept}
+		,user_spot=#{user_spot}
+		,user_army=#{user_army}
+		,user_marriage=#{user_marriage}
+		,user_army_start=#{user_army_start}
+		,user_army_end=#{user_army_end}
+		,user_army_part=#{user_army_part}
+		,user_telephone=#{user_telephone}
+		,user_mobile=#{user_mobile}
+		,user_email=#{user_email}
+		,user_address=#{user_address}
+		,user_social_number=#{user_social_number}
+		,user_zipcode=#{user_zipcode}
+	where user_idx=#{user_idx}	
+	</update>
+
+
+	<select id="selectEdu" parameterType="Integer" resultType="EduVO">
+	select *
+	from user_info_edu
+	where edu_idx = #{edu_idx}
+	
+	</select>
+	
+	<select id="selectQualifi" parameterType="Integer" resultType="QualifiVO">
+	select *
+	from user_info_qualifi
+	where qualifi_idx = #{qualifi_idx}
+	
+	</select>
+
+
+
+
+	<select id="selectQualifiInfo" parameterType="Integer" resultType="QualifiVO">
+		select *
+		from user_info_qualifi
+		where user_idx=#{user_idx}	
+	</select>
+
+
+
+	<select id="selectEduInfo" parameterType="Integer" resultType="EduVO">
+		select * 
+		from user_info_edu
+		where user_idx = #{user_idx}	
+		order by edu_idx asc
+	</select>
+
+
+	<select id="selectUserInfo" parameterType="Integer" resultType="CardVO">
+	select * 
+	from user_info
+	where user_idx=#{user_idx}
+	</select>
+
+
+	<select id="selectWithKeyword" parameterType="map" resultType="cardVO">
+
+	select * from
+	(select a.*, rownum rnum from
+			(select * from
+				(select user_info.*, trunc(months_between(sysdate,user_comp_enter)/12) user_career_year , 
+				mod(trunc(months_between(sysdate,user_comp_enter)),12) user_career_month from user_info)
+			<where> 
+				
+				<!-- 키필드와 키워드만 입력한 경우 -->
+			<if test="keyfield != '' and keyword != '' and career_year ==''" >
+				<if test="keyfield == 'user_idx'">
+						user_idx like '%'||#{keyword}||'%'
+				</if>
+				<if test="keyfield == 'user_name'">
+						user_name like '%'||#{keyword}||'%'
+				</if>
+				<if test="keyfield == 'user_comp'">
+						user_comp like '%'||#{keyword}||'%'
+				</if>
+				<if test="keyfield == 'user_dept'">
+						user_dept like '%'||#{keyword}||'%'
+				</if>
+			</if>
+			
+			
+			<!-- 경력사항만 입력한 경우-->
+			<if test="keyfield == '' and keyword == '' and career_year !=''" >
+				<if test="career_year=='1년미만'">
+					<![CDATA[user_career_year < 1]]>
+					</if>
+				
+					<if test="career_year=='1_2년'">
+					<![CDATA[user_career_year>=1 and user_career_year<3]]>
+					</if>
+				
+					<if test="career_year=='3_4년'">
+					<![CDATA[user_career_year>=3 and user_career_year<5]]>
+					</if>
+				
+					<if test="career_year=='5_'">
+					<![CDATA[user_career_year>=5]]>
+					</if>
+			
+			</if>
+			
+			<!-- 검색조건과 키워드, 경력사항을 모두 선택한 경우  -->
+				<if test="keyfield != '' and keyword != '' and career_year !=''" >
+			
+					<if test="keyfield == 'user_idx'">
+						user_idx like '%'||#{keyword}||'%'
+					</if>
+					<if test="keyfield == 'user_name'">
+						user_name like '%'||#{keyword}||'%'
+					</if>
+					<if test="keyfield == 'user_comp'">
+						user_comp like '%'||#{keyword}||'%'
+					</if>
+					<if test="keyfield == 'user_dept'">
+						user_dept like '%'||#{keyword}||'%'
+					</if>
+					and
+					<if test="career_year=='1년미만'">
+					<![CDATA[user_career_year < 1]]>
+					</if>
+				
+					<if test="career_year=='1_2년'">
+					<![CDATA[user_career_year>=1 and user_career_year<3]]>
+					</if>
+				
+					<if test="career_year=='3_4년'">
+					<![CDATA[user_career_year>=3 and user_career_year<5]]>
+					</if>
+				
+					<if test="career_year=='5_'">
+					<![CDATA[user_career_year>=5]]>
+					</if>	
+				</if>
+			</where>
+			)a)
+	<![CDATA[
+	where rnum>=#{start} and rnum<=#{end}
+	]]>
+	</select>
+	
+	
+	<select id="selectWithKeywordCount" parameterType="map" resultType="int">
+
+	select count(*) from
+				(select user_info.*, trunc(months_between(sysdate,user_comp_enter)/12) user_career_year , 
+				mod(trunc(months_between(sysdate,user_comp_enter)),12) user_career_month from user_info)
+			<where> 
+				<!-- 키필드와 키워드를 입력한 경우  -->
+			<if test="keyfield != '' and keyword != '' and career_year ==''" >
+				<if test="keyfield == 'user_idx'">
+						user_idx like '%'||#{keyword}||'%'
+				</if>
+				<if test="keyfield == 'user_name'">
+						user_name like '%'||#{keyword}||'%'
+				</if>
+				<if test="keyfield == 'user_comp'">
+						user_comp like '%'||#{keyword}||'%'
+				</if>
+				<if test="keyfield == 'user_dept'">
+						user_dept like '%'||#{keyword}||'%'
+				</if>
+			</if>
+			
+			<!-- 경력사항만 입력한 경우-->
+			<if test="keyfield == '' and keyword == '' and career_year !=''" >
+				<if test="career_year=='1년미만'">
+					<![CDATA[user_career_year < 1]]>
+					</if>
+				
+					<if test="career_year=='1_2년'">
+					<![CDATA[user_career_year>=1 and user_career_year<3]]>
+					</if>
+				
+					<if test="career_year=='3_4년'">
+					<![CDATA[user_career_year>=3 and user_career_year<5]]>
+					</if>
+				
+					<if test="career_year=='5_'">
+					<![CDATA[user_career_year>=5]]>
+					</if>
+			
+			</if>
+			
+			<!-- 검색조건과 키워드, 경력사항을 모두 선택한 경우  -->
+				<if test="keyfield != '' and keyword != '' and career_year !=''" >
+			
+					<if test="keyfield == 'user_idx'">
+						user_idx like '%'||#{keyword}||'%'
+					</if>
+					<if test="keyfield == 'user_name'">
+						user_name like '%'||#{keyword}||'%'
+					</if>
+					<if test="keyfield == 'user_comp'">
+						user_comp like '%'||#{keyword}||'%'
+					</if>
+					<if test="keyfield == 'user_dept'">
+						user_dept like '%'||#{keyword}||'%'
+					</if>
+					and
+					<if test="career_year=='1년미만'">
+					<![CDATA[user_career_year < 1]]>
+					</if>
+				
+					<if test="career_year=='1_2년'">
+					<![CDATA[user_career_year>=1 and user_career_year<3]]>
+					</if>
+				
+					<if test="career_year=='3_4년'">
+					<![CDATA[user_career_year>=3 and user_career_year<5]]>
+					</if>
+				
+					<if test="career_year=='5_'">
+					<![CDATA[user_career_year>=5]]>
+					</if>	
+				</if>
+			</where>
+			
+	</select>
+
+
+
+	<insert id="insertInfo" parameterType="cardVO">
+		insert into user_info
+			(user_idx
+			,user_register
+			,user_name
+			,user_sex
+			,user_comp
+			,user_comp_enter
+			,user_dept
+			,user_spot
+			,user_army
+			,user_marriage
+			,user_army_start
+			,user_army_end
+			,user_army_part
+			,user_telephone
+			,user_mobile
+			,user_email
+			,user_address
+			,user_social_number
+			,user_zipcode)
+		values 
+			((select nvl(max(user_idx)+1,1) from user_info)
+			,SYSDATE
+			,#{user_name}
+			,#{user_sex}
+			,#{user_comp}
+			,#{user_comp_enter}
+			,#{user_dept}
+			,#{user_spot}
+			,#{user_army}
+			,#{user_marriage}
+			,#{user_army_start}
+			,#{user_army_end}
+			,#{user_army_part}
+			,#{user_telephone}
+			,#{user_mobile}
+			,#{user_email}
+			,#{user_address}
+			,#{user_social_number}
+			,#{user_zipcode})
+	</insert>
+	
+	<insert id="insertQualifi" parameterType="QualifiVO">
+		
+		insert into user_info_qualifi
+			(qualifi_idx
+			,user_idx
+			,qualifi_name
+			,qualifi_getdate)
+		values
+		((select nvl(max(qualifi_idx)+1,1) from user_info_qualifi)
+		,(select nvl(max(user_idx),1) from user_info)
+		,#{qualifi_name}
+		,#{qualifi_getdate})
+		
+	</insert>
+	
+	<insert id="insertEdu" parameterType="EduVO">
+		
+		insert into user_info_edu
+			(edu_idx
+			,user_idx
+			,edu_school
+			,edu_status
+			,edu_year
+			,edu_month)
+		values
+		((select nvl(max(edu_idx)+1,1) from user_info_edu)
+		,(select nvl(max(user_idx),1) from user_info)
+		,#{edu_school}
+		,#{edu_status}
+		,#{edu_year}
+		,#{edu_month})
+		
+	</insert>
+</mapper>
