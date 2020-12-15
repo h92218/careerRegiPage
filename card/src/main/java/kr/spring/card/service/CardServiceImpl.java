@@ -142,7 +142,7 @@ public class CardServiceImpl implements CardService{
 	}
 
 	@Override
-	public Map<String, String> selectByCareerYear() {		
+	public List<Map<String, String>> selectByCareerYear() {		
 		return cardMapper.selectByCareerYear();
 	}
 	

@@ -27,5 +27,5 @@ public interface CardService {
 	public int deleteQualifi(HashMap<String,Object> map);
 	public int deleteEdu(HashMap<String,Object> map);
 	
-	public Map<String, String> selectByCareerYear();
+	public List<Map<String, String>> selectByCareerYear();
 }

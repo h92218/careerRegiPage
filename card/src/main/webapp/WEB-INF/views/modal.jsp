@@ -155,7 +155,6 @@ ${pagingHtml}</div> <input type="button" value="닫기" onclick="exitModal()" st
 //연차별 인원보기 
 function career_mem(){
 
-	
 
 	//기존 테이블 지우기 
 	var trlength = $('#modalTable tr').length;
@@ -165,12 +164,26 @@ function career_mem(){
 	}  
 	$('#page').css("display","none");
 	
-	$.ajax({
-		url : "/career.do"
-	});
+ 	$.ajax({
+		url : "/card/career.do",
+		dataType: "json",
+		type: "POST",
+		
+		 success: function(data){
+			 alert("조회 성공");
+			 console.log("data 길이 : " + data.list.length);
+			 console.log("year0" + data.list[0].YEAR + ", count0 : " + data.list[0].count);
+			 console.log("year1" + data.list[1].YEAR + ", count1 : " + data.list[1].count);
+			 console.log("year2" + data.list[2].YEAR + ", count2 : " + data.list[2].count);
+		 },
+		error: function (data){
+			alert("에러");
+			 console.log(data);
+			
+		}
+	}); 
 	
-	
-	
+		
 	$('#modalTable').append("<thead><tr><th>연차</th><th>인원</th><tr></thead>"+
 							"<tbody></tbody>"
 	);

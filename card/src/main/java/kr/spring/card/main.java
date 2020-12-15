@@ -3,8 +3,10 @@ package kr.spring.card;
 
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -20,6 +22,10 @@ import kr.spring.card.domain.EduVO;
 import kr.spring.card.domain.QualifiVO;
 import kr.spring.card.service.CardService;
 import kr.spring.util.PagingUtil;
+
+/*import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;*/
 
 
 @Controller
@@ -120,13 +126,50 @@ public class main {
 		return "redirect:/main.do";
 	}
 
-	@RequestMapping(value="/career.do")
+	@RequestMapping("/career.do")
 	@ResponseBody
 	public String CareerList() {
-		Map<String,String> map = new HashMap<String,String>();
-		map = cardService.selectByCareerYear();
-		System.out.print(map);
-		return "";
+		System.out.println("career.do");
+		List<Map<String,String>> careerList = cardService.selectByCareerYear();
+		System.out.print("결과 사이즈 " + careerList.size()+ "\n");
+		
+		//select 결과값 json으로 만들기
+		String result;
+		String json="";
+		Set<String> keySet;
+		Iterator<String> keyIterator;
+		String key,value;
+	
+		for(int i=0; i<careerList.size();i++) {
+			keySet = careerList.get(i).keySet();
+			keyIterator = keySet.iterator();
+			
+			json += "{";
+			while(keyIterator.hasNext()) {
+				key=keyIterator.next();
+				value=careerList.get(i).get(key);
+				json  += "\"" + key + "\" : " + "\"" + value + "\"";
+				if(keyIterator.hasNext())
+				{json +=",";}
+
+			}
+			json += "}";
+			if(i<careerList.size()-1) {
+				json+=",";
+			}
+		}
+		
+		
+		System.out.println(json);
+		
+		result = "{ \"list\" :[" + json + "]}";
+		System.out.println(result);
+		
+		
+/*		JSONParser parser;
+		JSONObject obj =  (JSONObject)jsonParse.parse(result);*/
+		
+		return "result";
 				
 	}
 	
