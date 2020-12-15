@@ -3,12 +3,6 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
 <mapper namespace="kr.spring.card.dao.CardMapper">
 
-	
-	<select id="selectByYear">
-	
-	
-	
-	</select>
 
 
 	<delete id="deleteEdu" parameterType="hashmap">
@@ -368,4 +362,17 @@
 		,#{edu_month})
 		
 	</insert>
+	
+	
+	<!--연차별 인원보기 -->
+	<select id="selectByCareerYear" resultType="HashMap">
+	select user_career_year || '년'
+			,count(user_career_year) || '명'
+				from(select 
+							trunc(months_between(sysdate,user_comp_enter)/12) user_career_year 
+								from user_info) 
+				where not user_career_year is NULL 
+				group by user_career_year 
+				order by user_career_year desc;
+	</select>
 </mapper>

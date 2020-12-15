@@ -33,6 +33,7 @@ public interface CardMapper {
 	public List<EduVO> selectEduInfo(Integer user_idx); 
 	public List<QualifiVO> selectQualifiInfo(Integer user_idx);
 	
+	public Map<String,String> selectByCareerYear();
 	
 
 }

@@ -444,13 +444,7 @@ $('.info_table').mouseover(function(){
 	
 }); 
 	
- //연차별 인원보기
-function byYear (){
-var table="<table><thead><th>연차</th><th>인원></th></thead>"
-		+"<tbody>"
-		+"</tbody></table>";
-	 //$('modalTable').html();
- }
+
 </script>
 </body>
 </html>

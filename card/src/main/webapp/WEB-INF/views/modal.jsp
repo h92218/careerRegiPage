@@ -112,7 +112,7 @@
 <input type="submit" value="검색">
  검색결과 :   ${count} 건
 </div>
-<input type="button" value="연차별 인원보기" style="float:left;margin-left:10px;"> 
+<input type="button" value="연차별 인원보기" style="float:left;margin-left:10px;" onclick="career_mem()"> 
 </form>
 <!--  불러오기 검색 부분 끝 -->
  <br><br>
@@ -143,13 +143,42 @@
 		</c:forEach>
 	</tbody>
 </table>
-
-${pagingHtml} <input type="button" value="닫기" onclick="exitModal()" style="float:right;margin:10px 10px 0 0"><br><br>
+<div id="page">
+${pagingHtml}</div> <input type="button" value="닫기" onclick="exitModal()" style="float:right;margin:10px 10px 0 0"><br><br>
 
 </div>
 
 
 <!-- 불러오기 창 끝 -->
+
+<script>
+//연차별 인원보기 
+function career_mem(){
+
+	
+
+	//기존 테이블 지우기 
+	var trlength = $('#modalTable tr').length;
+	var modaltable = document.getElementById('modalTable');
+	for(var t=trlength-1;t>=0;t--){
+		modaltable.deleteRow(t);
+	}  
+	$('#page').css("display","none");
+	
+	$.ajax({
+		url : "/career.do"
+	});
+	
+	
+	
+	$('#modalTable').append("<thead><tr><th>연차</th><th>인원</th><tr></thead>"+
+							"<tbody></tbody>"
+	);
+
+	
+}
+
+</script>
 
 </body>
 </html>

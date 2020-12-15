@@ -140,6 +140,11 @@ public class CardServiceImpl implements CardService{
 		result=cardMapper.deleteEdu(map);
 		return result;
 	}
+
+	@Override
+	public Map<String, String> selectByCareerYear() {		
+		return cardMapper.selectByCareerYear();
+	}
 	
 	
 }
