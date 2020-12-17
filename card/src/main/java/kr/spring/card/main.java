@@ -17,16 +17,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+
 import kr.spring.card.domain.CardVO;
 import kr.spring.card.domain.EduVO;
 import kr.spring.card.domain.QualifiVO;
 import kr.spring.card.service.CardService;
 import kr.spring.util.PagingUtil;
 
-/*import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;*/
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 @Controller
 public class main {
@@ -128,7 +130,7 @@ public class main {
 
 	@RequestMapping("/career.do")
 	@ResponseBody
-	public String CareerList() {
+	public JSONObject CareerList() {
 		System.out.println("career.do");
 		List<Map<String,String>> careerList = cardService.selectByCareerYear();
 		System.out.print("결과 사이즈 " + careerList.size()+ "\n");
@@ -165,11 +167,17 @@ public class main {
 		result = "{ \"list\" :[" + json + "]}";
 		System.out.println(result);
 		
-		
-/*		JSONParser parser;
-		JSONObject obj =  (JSONObject)jsonParse.parse(result);*/
-		
-		return "result";
+		JSONParser parser = new JSONParser();
+		Object obj;
+		try{
+			obj = parser.parse(result);
+		}catch(Exception e ){
+			obj="error";
+		} 
+		JSONObject jsonObj = (JSONObject) obj;
+		System.out.println("생성된 jsonObj : " + jsonObj);
+
+		return jsonObj;
 				
 	}
 	
